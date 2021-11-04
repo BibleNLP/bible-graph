@@ -1,9 +1,11 @@
 type BookReference {
   id: ID!
+  abbreviation: String! @search @id
   name: String! @search(by: [term, exact])
   number: Int! @search 
   chapterReferences: [ChapterReference!] @hasInverse(field: bookReference)
 }
+
 
 type ChapterReference {
   id: ID!
