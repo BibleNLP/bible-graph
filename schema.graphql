@@ -32,14 +32,14 @@ type BibleVersion {
 
 type ISOLanguage {
   id: ID!
-  iso639: String! @search(by: [exact])
+  iso639: String! @search(by: [exact]) @id
   name: String! @search(by: [term, exact])
   bibleVersions: [BibleVersion]
 }
 
 type ISOScript {
   id: ID!
-  iso15924: String! @search(by: [exact])
+  iso15924: String! @search(by: [exact]) @id
   name: String! @search(by: [term, exact])
   bibleVersions: [BibleVersion]
 }
