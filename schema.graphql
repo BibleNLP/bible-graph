@@ -25,9 +25,12 @@ type BibleVersion {
   name: String! @search(by: [term, exact])
   language: ISOLanguage! 
   script: ISOScript!
-  abbreviation: String @search
+  abbreviation: String @search @id
   rights: String @search(by: [term, exact])
   revisions: [BibleRevision] @hasInverse(field: bibleVersion)
+  forwardTranslation: BibleRevision @hasInverse(field: backTranslation)
+  backTranslation: BibleRevision @hasInverse(field: forwardTranslation)
+  machineTranslation: Boolean
 }
 
 type ISOLanguage {
