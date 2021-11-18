@@ -37,7 +37,7 @@ type LocalizedBookName {
   id: ID!
   name: String! @search(by: [term, exact])
   book: BookReference!
-  bibleVersion: BibleVersion!
+  bibleVersion: BibleVersion! @search(by: [exact])
 }
 
 type ISOLanguage {
