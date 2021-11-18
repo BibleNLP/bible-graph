@@ -33,6 +33,13 @@ type BibleVersion {
   machineTranslation: Boolean
 }
 
+type LocalizedBookName {
+  id: ID!
+  name: String! @search(by: [term, exact])
+  book: BookReference!
+  bibleVersion: BibleVersion!
+}
+
 type ISOLanguage {
   id: ID!
   iso639: String! @search(by: [exact]) @id
