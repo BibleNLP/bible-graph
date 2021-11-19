@@ -2,6 +2,7 @@ type BookReference {
   id: ID!
   abbreviation: String! @search @id
   name: String! @search(by: [term, exact])
+  localizedBookName: [LocalizedBookName] @hasInverse(field: bookReference)
   number: Int! @search 
   chapterReferences: [ChapterReference!] @hasInverse(field: bookReference)
 }
@@ -23,28 +24,36 @@ type VerseReference {
 type BibleVersion {
   id: ID!
   name: String! @search(by: [term, exact])
-  language: ISOLanguage! 
-  script: ISOScript!
+  isoLanguage: ISOLanguage! @hasInverse(field: bibleVersions)
+  isoScript: ISOScript! @hasInverse(field: bibleVersions)
   abbreviation: String @search @id
   rights: String @search(by: [term, exact])
+  localizedBooks: [LocalizedBookName] @hasInverse(field: bibleVersion)
   revisions: [BibleRevision] @hasInverse(field: bibleVersion)
   forwardTranslation: BibleRevision @hasInverse(field: backTranslation)
   backTranslation: BibleRevision @hasInverse(field: forwardTranslation)
   machineTranslation: Boolean
 }
 
+type LocalizedBookName {
+  id: ID!
+  name: String! @search(by: [term, exact])
+  bookReference: BookReference! @hasInverse(field: localizedBookName)
+  bibleVersion: BibleVersion! @search(by: [exact]) @hasInverse(field: localizedBooks)
+}
+
 type ISOLanguage {
   id: ID!
   iso639: String! @search(by: [exact]) @id
   name: String! @search(by: [term, exact])
-  bibleVersions: [BibleVersion]
+  bibleVersions: [BibleVersion] @hasInverse(field: isoLanguage)
 }
 
 type ISOScript {
   id: ID!
   iso15924: String! @search(by: [exact]) @id
   name: String! @search(by: [term, exact])
-  bibleVersions: [BibleVersion]
+  bibleVersions: [BibleVersion] @hasInverse(field: isoScript)
 }
 
 type BibleRevision {
