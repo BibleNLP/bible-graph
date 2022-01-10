@@ -107,6 +107,7 @@ type AssessmentMetric {
   assessmentDetail: AssessmentDetail!
   flag: Boolean @search
   number: Float @search
+  tag: String @search
 }
 
 enum AnnotationType {
