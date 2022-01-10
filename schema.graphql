@@ -17,6 +17,7 @@ type ChapterReference {
 
 type VerseReference {
   id: ID!
+  fullVerseId: String! @search @id
   number: Int! @search
   chapterReference: ChapterReference!
 }
@@ -92,7 +93,13 @@ type AssessmentDetail {
   id: ID!
   assessment: Assessment!
   assessmentMetrics: [AssessmentMetric!] @hasInverse(field: assessmentDetail)
-  verseTexts: [VerseText]
+  verseTexts: [VerseText!]
+  startPosition: Int
+  endPosition: Int
+  refVerseTexts: [VerseText]
+  refStartPosition: Int
+  refEndPosition: Int
+  annotations: [Annotation] @hasInverse(field: assessmentDetail)
 }
 
 type AssessmentMetric {
@@ -101,3 +108,21 @@ type AssessmentMetric {
   flag: Boolean @search
   number: Float @search
 }
+
+enum AnnotationType {
+  SubAssessment
+  VersePart
+  PartOfSpeech
+}
+
+type Annotation {
+  id: ID!
+  verseTexts: [VerseText!]
+  startPosition: Int
+  endPosition: Int
+  assessmentDetail: [AssessmentDetail] @hasInverse(field: annotations)
+  flag: Boolean @search
+  number: Float @search
+  tag: String @search
+}
+
