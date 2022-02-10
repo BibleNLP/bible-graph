@@ -107,8 +107,6 @@ interface Annotation {
   flag: Boolean @search
   number: Float @search
   tag: String @search
-  parent: [Annotation] @hasInverse(field: children)
-  children: [Annotation] @hasInverse(field: parent)
 }
 
 type TextAnnotation implements Annotation {
@@ -122,8 +120,6 @@ type TextAnnotation implements Annotation {
   flag: Boolean @search
   number: Float @search
   tag: String @search
-  parent: [Annotation] @hasInverse(field: children)
-  children: [Annotation] @hasInverse(field: parent)
   assessment: [Assessment] @hasInverse(field: details)
   type: TextAnnotationType!
 }
@@ -134,8 +130,6 @@ type ReferenceAnnotation implements Annotation {
   flag: Boolean @search
   number: Float @search
   tag: String @search
-  parent: [Annotation] @hasInverse(field: children)
-  children: [Annotation] @hasInverse(field: parent)
   type: ReferenceAnnotationType!
 }
 
