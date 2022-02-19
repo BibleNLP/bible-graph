@@ -47,6 +47,7 @@ type ISOLanguage {
   iso639: String! @search(by: [exact]) @id
   name: String! @search(by: [term, exact])
   bibleVersions: [BibleVersion] @hasInverse(field: isoLanguage)
+  words: [Word] @hasInverse(field: isoLanguage)
 }
 
 type ISOScript {
@@ -71,6 +72,7 @@ type VerseText {
   verseReference: [VerseReference!]
   bibleRevision: BibleRevision!
   assessmentDetails: [AssessmentDetail]
+  words: [Word] @hasInverse(field: verseTexts)
 }
 
 enum AssessmentType {
@@ -105,7 +107,7 @@ type AssessmentMetric {
 type SemanticDomain {
   cids: ID!
   name: String! @search
-  words: [Word!] @hasInverse(field: semanticDomain)
+  words: [Word!] @hasInverse(field: semanticDomains)
   parentSemanticDomain: SemanticDomain
   childSemanticDomains: [SemanticDomain] @hasInverse(field: parentSemanticDomain)
 }
@@ -113,6 +115,7 @@ type SemanticDomain {
 type Word {
   id: ID!
   text: String! @search
-  semanticDomain: [SemanticDomain!]
+  semanticDomains: [SemanticDomain!]
   isoLanguage: ISOLanguage!
+  verseTexts: [VerseText] @hasInverse(field: verseText)
 }
