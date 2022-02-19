@@ -101,3 +101,18 @@ type AssessmentMetric {
   flag: Boolean @search
   number: Float @search
 }
+
+type SemanticDomain {
+  cids: ID!
+  name: String! @search
+  words: [Word!] @hasInverse(field: semanticDomain)
+  parentSemanticDomain: SemanticDomain
+  childSemanticDomains: [SemanticDomain] @hasInverse(field: parentSemanticDomain)
+}
+
+type Word {
+  id: ID!
+  text: String! @search
+  semanticDomain: [SemanticDomain!]
+  isoLanguage: ISOLanguage!
+}
