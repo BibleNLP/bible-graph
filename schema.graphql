@@ -117,5 +117,5 @@ type Word {
   text: String! @search
   semanticDomains: [SemanticDomain!]
   isoLanguage: ISOLanguage!
-  verseTexts: [VerseText] @hasInverse(field: verseText)
+  verseTexts: [VerseText] @hasInverse(field: words)
 }
