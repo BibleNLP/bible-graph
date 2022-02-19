@@ -105,8 +105,10 @@ type AssessmentMetric {
 }
 
 type SemanticDomain {
-  cids: ID!
+  id: ID!
+  cid: String!
   name: String! @search
+  question: String
   words: [Word!] @hasInverse(field: semanticDomains)
   parentSemanticDomain: SemanticDomain
   childSemanticDomains: [SemanticDomain] @hasInverse(field: parentSemanticDomain)
