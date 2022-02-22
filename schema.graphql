@@ -1,4 +1,9 @@
-type BookReference {
+interface Reference {
+  id: ID!
+  number: Int! @search
+}
+
+type BookReference implements Reference{
   id: ID!
   abbreviation: String! @search @id
   name: String! @search(by: [term, exact])
@@ -8,15 +13,16 @@ type BookReference {
 }
 
 
-type ChapterReference {
+type ChapterReference implements Reference{
   id: ID!
   number: Int! @search
   bookReference: BookReference!
   verseReferences: [VerseReference!] @hasInverse(field: chapterReference)
 }
 
-type VerseReference {
+type VerseReference implements Reference{
   id: ID!
+  fullVerseId: String! @search @id
   number: Int! @search
   chapterReference: ChapterReference!
 }
@@ -73,31 +79,57 @@ type VerseText {
   assessmentDetails: [AssessmentDetail]
 }
 
-enum AssessmentType {
+enum TextAnnotationType {
   SemanticSimilarity
   QAComprehensibility
   SubwordsPerSentence
+  VersePart
+  PartOfSpeech
+  NamedEntity
+}
+
+enum ReferenceAnnotationType {
+  SemanticDomain
+  KeyTerm
 }
 
 type Assessment {
   id: ID!
-  type: AssessmentType! @search(by: [exact])
+  type: TextAnnotationType! @search(by: [exact])
   bibleRevision: BibleRevision!
   reference: BibleRevision
   date: DateTime! @search
-  details: [AssessmentDetail!] @hasInverse(field: assessment)
+  details: [Annotation!] @hasInverse(field: assessment)
 }
 
-type AssessmentDetail {
+interface Annotation {
   id: ID!
-  assessment: Assessment!
-  assessmentMetrics: [AssessmentMetric!] @hasInverse(field: assessmentDetail)
-  verseTexts: [VerseText]
-}
-
-type AssessmentMetric {
-  id: ID!
-  assessmentDetail: AssessmentDetail!
   flag: Boolean @search
   number: Float @search
+  tag: String @search
 }
+
+type TextAnnotation implements Annotation {
+  id: ID!
+  verseTexts: [VerseText!]
+  startPosition: Int
+  endPosition: Int
+  refVerseTexts: [VerseText]
+  refStartPosition: Int
+  refEndPosition: Int
+  flag: Boolean @search
+  number: Float @search
+  tag: String @search
+  assessment: [Assessment] @hasInverse(field: details)
+  type: TextAnnotationType!
+}
+
+type ReferenceAnnotation implements Annotation {
+  id: ID!
+  reference: [Reference!]
+  flag: Boolean @search
+  number: Float @search
+  tag: String @search
+  type: ReferenceAnnotationType!
+}
+
