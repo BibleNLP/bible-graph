@@ -151,3 +151,4 @@ type Word {
   semanticDomains: [SemanticDomain!]
   isoLanguage: ISOLanguage!
 }
+
