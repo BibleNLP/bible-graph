@@ -1,4 +1,9 @@
-type BookReference {
+interface Reference {
+  id: ID!
+  number: Int! @search
+}
+
+type BookReference implements Reference{
   id: ID!
   abbreviation: String! @search @id
   name: String! @search(by: [term, exact])
@@ -8,15 +13,16 @@ type BookReference {
 }
 
 
-type ChapterReference {
+type ChapterReference implements Reference{
   id: ID!
   number: Int! @search
   bookReference: BookReference!
   verseReferences: [VerseReference!] @hasInverse(field: chapterReference)
 }
 
-type VerseReference {
+type VerseReference implements Reference{
   id: ID!
+  fullVerseId: String! @search @id
   number: Int! @search
   chapterReference: ChapterReference!
 }
@@ -47,7 +53,6 @@ type ISOLanguage {
   iso639: String! @search(by: [exact]) @id
   name: String! @search(by: [term, exact])
   bibleVersions: [BibleVersion] @hasInverse(field: isoLanguage)
-  words: [Word] @hasInverse(field: isoLanguage)
 }
 
 type ISOScript {
@@ -71,37 +76,62 @@ type VerseText {
   text: String! @search(by: [term])
   verseReference: [VerseReference!]
   bibleRevision: BibleRevision!
-  assessmentDetails: [AssessmentDetail]
-  words: [Word] @hasInverse(field: verseTexts)
+  textAnnotations: [TextAnnotation]
 }
 
-enum AssessmentType {
+enum TextAnnotationType {
   SemanticSimilarity
   QAComprehensibility
   SubwordsPerSentence
+  VersePart
+  PartOfSpeech
+  NamedEntity
+}
+
+enum ReferenceAnnotationType {
+  SemanticDomain
+  KeyTerm
 }
 
 type Assessment {
   id: ID!
-  type: AssessmentType! @search(by: [exact])
+  type: TextAnnotationType! @search(by: [exact])
   bibleRevision: BibleRevision!
   reference: BibleRevision
   date: DateTime! @search
-  details: [AssessmentDetail!] @hasInverse(field: assessment)
+  details: [TextAnnotation!] @hasInverse(field: assessment)
 }
 
-type AssessmentDetail {
+interface Annotation {
   id: ID!
-  assessment: Assessment!
-  assessmentMetrics: [AssessmentMetric!] @hasInverse(field: assessmentDetail)
-  verseTexts: [VerseText]
-}
-
-type AssessmentMetric {
-  id: ID!
-  assessmentDetail: AssessmentDetail!
   flag: Boolean @search
   number: Float @search
+  tag: String @search
+}
+
+type TextAnnotation implements Annotation {
+  id: ID!
+  verseTexts: [VerseText!]
+  startPosition: Int
+  endPosition: Int
+  refVerseTexts: [VerseText]
+  refStartPosition: Int
+  refEndPosition: Int
+  flag: Boolean @search
+  number: Float @search
+  tag: String @search
+  assessment: [Assessment] @hasInverse(field: details)
+  type: TextAnnotationType!
+}
+
+type ReferenceAnnotation implements Annotation {
+  id: ID!
+  reference: [Reference!]
+  flag: Boolean @search
+  number: Float @search
+  tag: String @search
+  type: ReferenceAnnotationType!
+  semanticDomains: [SemanticDomain] @hasInverse(field: referenceAnnotations)
 }
 
 type SemanticDomain {
@@ -112,6 +142,7 @@ type SemanticDomain {
   words: [Word!] @hasInverse(field: semanticDomains)
   parentSemanticDomain: SemanticDomain
   childSemanticDomains: [SemanticDomain] @hasInverse(field: parentSemanticDomain)
+  referenceAnnotations: [ReferenceAnnotation] @hasInverse(field: semanticDomains)
 }
 
 type Word {
@@ -119,5 +150,4 @@ type Word {
   text: String! @search
   semanticDomains: [SemanticDomain!]
   isoLanguage: ISOLanguage!
-  verseTexts: [VerseText] @hasInverse(field: words)
 }
