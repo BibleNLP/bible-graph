@@ -137,7 +137,7 @@ type ReferenceAnnotation implements Annotation {
 
 type SemanticDomain {
   id: ID!
-  cid: String! @search
+  cid: String! @search(by: [exact]) @id
   name: String! @search
   questions: [SemanticDomainQuestion!] @hasInverse(field: semanticDomain)
   parentSemanticDomain: SemanticDomain
@@ -155,6 +155,6 @@ type SemanticDomainQuestion {
 
 type Word {
   id: ID!
-  text: String! @search
-  semanticDomainQuestions: [SemanticDomainQuestion!]
+  text: String! @search(by: [exact]) @id
+  semanticDomainQuestions: [SemanticDomainQuestion!] @hasInverse(field: words)
 }
