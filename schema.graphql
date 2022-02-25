@@ -53,6 +53,7 @@ type ISOLanguage {
   iso639: String! @search(by: [exact]) @id
   name: String! @search(by: [term, exact])
   bibleVersions: [BibleVersion] @hasInverse(field: isoLanguage)
+  semanticDomainQuestions: [SemanticDomainQuestion] @hasInverse(field: isoLanguage)
 }
 
 type ISOScript {
@@ -136,19 +137,24 @@ type ReferenceAnnotation implements Annotation {
 
 type SemanticDomain {
   id: ID!
-  cid: String!
+  cid: String! @search
   name: String! @search
-  question: String
-  words: [Word!] @hasInverse(field: semanticDomains)
+  questions: [SemanticDomainQuestion!] @hasInverse(field: semanticDomain)
   parentSemanticDomain: SemanticDomain
   childSemanticDomains: [SemanticDomain] @hasInverse(field: parentSemanticDomain)
   referenceAnnotations: [ReferenceAnnotation] @hasInverse(field: semanticDomains)
 }
 
-type Word {
+type SemanticDomainQuestion {
   id: ID!
-  text: String! @search
-  semanticDomains: [SemanticDomain!]
+  text: String!
+  semanticDomain: SemanticDomain! @hasInverse(field: questions)
+  words: [Word!] @hasInverse(field: semanticDomainQuestions)
   isoLanguage: ISOLanguage!
 }
 
+type Word {
+  id: ID!
+  text: String! @search
+  semanticDomainQuestions: [SemanticDomainQuestion!]
+}
