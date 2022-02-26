@@ -158,3 +158,4 @@ type Word {
   text: String! @search(by: [exact]) @id
   semanticDomainQuestions: [SemanticDomainQuestion!] @hasInverse(field: words)
 }
+
