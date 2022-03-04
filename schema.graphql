@@ -53,6 +53,7 @@ type ISOLanguage {
   iso639: String! @search(by: [exact]) @id
   name: String! @search(by: [term, exact])
   bibleVersions: [BibleVersion] @hasInverse(field: isoLanguage)
+  semanticDomainQuestions: [SemanticDomainQuestion] @hasInverse(field: isoLanguage)
 }
 
 type ISOScript {
@@ -76,7 +77,7 @@ type VerseText {
   text: String! @search(by: [term])
   verseReference: [VerseReference!]
   bibleRevision: BibleRevision!
-  assessmentDetails: [AssessmentDetail]
+  textAnnotations: [TextAnnotation]
 }
 
 enum TextAnnotationType {
@@ -99,7 +100,7 @@ type Assessment {
   bibleRevision: BibleRevision!
   reference: BibleRevision
   date: DateTime! @search
-  details: [Annotation!] @hasInverse(field: assessment)
+  details: [TextAnnotation!] @hasInverse(field: assessment)
 }
 
 interface Annotation {
@@ -131,5 +132,30 @@ type ReferenceAnnotation implements Annotation {
   number: Float @search
   tag: String @search
   type: ReferenceAnnotationType!
+  semanticDomains: [SemanticDomain] @hasInverse(field: referenceAnnotations)
+}
+
+type SemanticDomain {
+  id: ID!
+  cid: String! @search(by: [exact]) @id
+  name: String! @search
+  questions: [SemanticDomainQuestion!] @hasInverse(field: semanticDomain)
+  parentSemanticDomain: SemanticDomain
+  childSemanticDomains: [SemanticDomain] @hasInverse(field: parentSemanticDomain)
+  referenceAnnotations: [ReferenceAnnotation] @hasInverse(field: semanticDomains)
+}
+
+type SemanticDomainQuestion {
+  id: ID!
+  text: String!
+  semanticDomain: SemanticDomain! @hasInverse(field: questions)
+  words: [Word!] @hasInverse(field: semanticDomainQuestions)
+  isoLanguage: ISOLanguage!
+}
+
+type Word {
+  id: ID!
+  text: String! @search(by: [exact]) @id
+  semanticDomainQuestions: [SemanticDomainQuestion!] @hasInverse(field: words)
 }
 
